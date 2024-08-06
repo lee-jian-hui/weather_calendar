@@ -2,7 +2,7 @@ const API_KEY = 'ad4750d7b78021310b7e581727472dfe'
 
 
 
-function getWeatherForecast2() {
+function getWeatherForecast() {
   const location = 'London'; // Replace with your location
   const apiUrl = `https://api.openweathermap.org/data/2.5/forecast?q=${location}&appid=${API_KEY}&units=metric`;
 
@@ -47,26 +47,23 @@ function getWeatherForecast2() {
 }
 
 function updateCalendarEvent(isRaining, date) {
+  const title = 'Rain Alert'
   const calendar = CalendarApp.getDefaultCalendar();
   const events = calendar.getEventsForDay(date);
 
   // Check if there is already an event for rain
-  let rainEvent = null;
-  events.forEach((event) => {
-    if (event.getTitle() === 'Rain Alert') {
-      rainEvent = event;
-    }
-  });
-  Logger.log(`isRaining: ${isRaining}, rainEvent: ${rainEvent}`)
+  const rainEvents = events.filter((event) => event.getTitle() === title);
 
-  if (isRaining) {
-    if (!rainEvent) {
-      calendar.createAllDayEvent('Rain Alert', date);
-    }
+  // create rain event or not
+  if (rainEvents.length > 0 & isRaining) {
+    Logger.log(`Existing Rain Events Found: ${rainEvents.length}`);
   } 
-  else {
-    if (rainEvent) {
-      rainEvent.deleteEvent();
-    }
+  else if (rainEvents.length == 0 & isRaining){
+    const rain_event = calendar.createAllDayEvent(title, date);
+    Logger.log(`Created New Rain Event: ${rain_event}`);
   }
+  else {
+    Logger.log('No rain events found');
+  }
+
 }
